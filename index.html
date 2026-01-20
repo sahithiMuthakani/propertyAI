@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Modern user management system with real-time data processing and ML capabilities">
+    <title>User Management System - Data Processing & ML Platform</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="background-effects">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header/Navigation -->
+        <header class="header" id="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <path d="M16 4L4 10V18C4 24.6274 9.37258 28 16 28C22.6274 28 28 24.6274 28 18V10L16 4Z" 
+                              fill="url(#gradient)" stroke="white" stroke-width="2"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="4" y1="4" x2="28" y2="28">
+                                <stop offset="0%" stop-color="#667eea"/>
+                                <stop offset="100%" stop-color="#764ba2"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="logo-text">DataML Hub</span>
+            </div>
+            
+            <nav class="nav" id="nav">
+                <button class="nav-link" id="navDashboard">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M3 4C3 3.44772 3.44772 3 4 3H16C16.5523 3 17 3.44772 17 4V6C17 6.55228 16.5523 7 16 7H4C3.44772 7 3 6.55228 3 6V4Z"/>
+                        <path d="M3 10C3 9.44772 3.44772 9 4 9H10C10.5523 9 11 9.44772 11 10V16C11 16.5523 10.5523 17 10 17H4C3.44772 17 3 16.5523 3 16V10Z"/>
+                        <path d="M14 9C13.4477 9 13 9.44772 13 10V16C13 16.5523 13.4477 17 14 17H16C16.5523 17 17 16.5523 17 16V10C17 9.44772 16.5523 9 16 9H14Z"/>
+                    </svg>
+                    Dashboard
+                </button>
+                <button class="nav-link" id="navProfile">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 8C11.6569 8 13 6.65685 13 5C13 3.34315 11.6569 2 10 2C8.34315 2 7 3.34315 7 5C7 6.65685 8.34315 8 10 8Z"/>
+                        <path d="M3 18C3 14.134 6.13401 11 10 11C13.866 11 17 14.134 17 18H3Z"/>
+                    </svg>
+                    Profile
+                </button>
+                <button class="btn btn-logout" id="btnLogout">Logout</button>
+            </nav>
+        </header>
+
+        <!-- Login View -->
+        <div class="view active" id="loginView">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h1 class="auth-title">Welcome Back</h1>
+                        <p class="auth-subtitle">Sign in to access your account</p>
+                    </div>
+                    
+                    <form class="auth-form" id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail" class="form-label">Email Address</label>
+                            <input 
+                                type="email" 
+                                id="loginEmail" 
+                                class="form-input" 
+                                placeholder="you@example.com"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input 
+                                type="password" 
+                                id="loginPassword" 
+                                class="form-input" 
+                                placeholder="••••••••"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-error" id="loginError"></div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full" id="btnLogin">
+                            <span class="btn-text">Sign In</span>
+                            <div class="btn-loader"></div>
+                        </button>
+                    </form>
+                    
+                    <div class="auth-footer">
+                        <p>Don't have an account? 
+                            <a href="#" class="link" id="linkToRegister">Create one</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register View -->
+        <div class="view" id="registerView">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h1 class="auth-title">Create Account</h1>
+                        <p class="auth-subtitle">Join our data processing platform</p>
+                    </div>
+                    
+                    <form class="auth-form" id="registerForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="registerUsername" class="form-label">Username</label>
+                                <input 
+                                    type="text" 
+                                    id="registerUsername" 
+                                    class="form-input" 
+                                    placeholder="johndoe"
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="registerFullName" class="form-label">Full Name</label>
+                                <input 
+                                    type="text" 
+                                    id="registerFullName" 
+                                    class="form-input" 
+                                    placeholder="John Doe"
+                                >
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerEmail" class="form-label">Email Address</label>
+                            <input 
+                                type="email" 
+                                id="registerEmail" 
+                                class="form-input" 
+                                placeholder="you@example.com"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerPassword" class="form-label">Password</label>
+                            <input 
+                                type="password" 
+                                id="registerPassword" 
+                                class="form-input" 
+                                placeholder="••••••••"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-error" id="registerError"></div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full" id="btnRegister">
+                            <span class="btn-text">Create Account</span>
+                            <div class="btn-loader"></div>
+                        </button>
+                    </form>
+                    
+                    <div class="auth-footer">
+                        <p>Already have an account? 
+                            <a href="#" class="link" id="linkToLogin">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div class="view" id="dashboardView">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Manage users and view system statistics</p>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-primary">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13"/>
+                            <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-value" id="statTotalUsers">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-success">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Active Users</div>
+                        <div class="stat-value" id="statActiveUsers">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-warning">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/>
+                            <path d="M12 8V12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="12" cy="16" r="1" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Inactive Users</div>
+                        <div class="stat-value" id="statInactiveUsers">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Users Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">All Users</h2>
+                    <button class="btn btn-primary btn-sm" id="btnRefreshUsers">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Full Name</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="8" class="table-empty">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div class="view" id="profileView">
+            <div class="page-header">
+                <h1 class="page-title">My Profile</h1>
+                <p class="page-subtitle">Manage your account information</p>
+            </div>
+            
+            <div class="profile-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Profile Information</h2>
+                    </div>
+                    <div class="card-body">
+                        <form class="profile-form" id="profileForm">
+                            <div class="form-group">
+                                <label for="profileUsername" class="form-label">Username</label>
+                                <input 
+                                    type="text" 
+                                    id="profileUsername" 
+                                    class="form-input" 
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profileFullName" class="form-label">Full Name</label>
+                                <input 
+                                    type="text" 
+                                    id="profileFullName" 
+                                    class="form-input"
+                                >
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profileEmail" class="form-label">Email Address</label>
+                                <input 
+                                    type="email" 
+                                    id="profileEmail" 
+                                    class="form-input" 
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profilePassword" class="form-label">New Password (leave blank to keep current)</label>
+                                <input 
+                                    type="password" 
+                                    id="profilePassword" 
+                                    class="form-input" 
+                                    placeholder="••••••••"
+                                >
+                            </div>
+                            
+                            <div class="form-error" id="profileError"></div>
+                            <div class="form-success" id="profileSuccess"></div>
+                            
+                            <button type="submit" class="btn btn-primary" id="btnUpdateProfile">
+                                <span class="btn-text">Update Profile</span>
+                                <div class="btn-loader"></div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Account Details</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">User ID</div>
+                                <div class="info-value" id="infoUserId">-</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Role</div>
+                                <div class="info-value" id="infoUserRole">-</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Account Created</div>
+                                <div class="info-value" id="infoUserCreated">-</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Last Updated</div>
+                                <div class="info-value" id="infoUserUpdated">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-content"></div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

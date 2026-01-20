@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Price Prediction | Real Estate Valuation</title>
+    <meta name="description" content="Predict property prices across multiple countries with AI-powered valuation">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #818cf8;
+            --accent: #10b981;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 20% 80%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 20%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .prediction-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        select, input {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.875rem 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        select:hover, input:hover {
+            border-color: var(--secondary);
+        }
+        
+        .checkbox-group {
+            flex-direction: row;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+        
+        .predict-btn {
+            grid-column: 1 / -1;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        .predict-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-section {
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .result-section.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .result-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-range {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+        }
+        
+        .result-accuracy {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            border-radius: 10px;
+            padding: 1rem;
+            color: #ef4444;
+            text-align: center;
+            display: none;
+        }
+        
+        .error-message.visible {
+            display: block;
+        }
+        
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .loading.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--secondary);
+        }
+        
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .result-price {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+            </svg>
+            Back to Home
+        </a>
+        
+        <header>
+            <h1>Property Price Prediction</h1>
+            <p class="subtitle">AI-powered property valuation across multiple countries</p>
+        </header>
+        
+        <div class="prediction-card">
+            <form id="predictionForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <select id="country" name="country" required>
+                            <option value="">Select Country</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <select id="city" name="city" required>
+                            <option value="">Select City</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rooms">Number of Rooms / BHK</label>
+                        <input type="number" id="rooms" name="rooms" min="1" max="20" value="2" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="area">Area (sqm)</label>
+                        <input type="number" id="area" name="area" min="10" max="2000" value="100" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="building_age">Building Age (years)</label>
+                        <input type="number" id="building_age" name="building_age" min="0" max="150" value="10" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="furnishing">Furnishing Status</label>
+                        <select id="furnishing" name="furnishing">
+                            <option value="Unknown">Unknown</option>
+                            <option value="Furnished">Furnished</option>
+                            <option value="Semi-Furnished">Semi-Furnished</option>
+                            <option value="Unfurnished">Unfurnished</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="balcony" name="balcony">
+                        <label for="balcony">Has Balcony</label>
+                    </div>
+                    
+
+                    
+                    <button type="submit" class="predict-btn" id="predictBtn">
+                        Predict Price
+                    </button>
+                </div>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="result-section" id="resultSection">
+                <div class="result-card">
+                    <div class="result-label">Estimated Property Price</div>
+                    <div class="result-price" id="resultPrice">$0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load countries on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCountries();
+        });
+        
+        async function loadCountries() {
+            try {
+                const response = await fetch('/api/countries');
+                const data = await response.json();
+                
+                if (data.countries) {
+                    const countrySelect = document.getElementById('country');
+                    countrySelect.innerHTML = '<option value="">Select Country</option>';
+                    
+                    data.countries.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country;
+                        option.textContent = country;
+                        countrySelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                showError('Failed to load countries: ' + error.message);
+            }
+        }
+        
+        // Load cities when country changes
+        document.getElementById('country').addEventListener('change', async (e) => {
+            const country = e.target.value;
+            const citySelect = document.getElementById('city');
+            
+            if (!country) {
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/cities/${encodeURIComponent(country)}`);
+                const data = await response.json();
+                
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                
+                if (data.cities) {
+                    data.cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                showError('Failed to load cities: ' + error.message);
+            }
+        });
+        
+        // Handle form submission
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('predictBtn');
+            const loading = document.getElementById('loading');
+            const resultSection = document.getElementById('resultSection');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Hide previous results
+            resultSection.classList.remove('visible');
+            errorMessage.classList.remove('visible');
+            
+            // Show loading
+            submitBtn.disabled = true;
+            loading.classList.add('visible');
+            
+            try {
+                const formData = {
+                    country: document.getElementById('country').value,
+                    city: document.getElementById('city').value,
+                    rooms: parseInt(document.getElementById('rooms').value),
+                    area_sqm: parseFloat(document.getElementById('area').value),
+                    building_age: parseInt(document.getElementById('building_age').value),
+                    furnishing_status: document.getElementById('furnishing').value,
+                    balcony: document.getElementById('balcony').checked
+                };
+                
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const prediction = data.prediction;
+                    
+                    document.getElementById('resultPrice').textContent = 
+                        `$${prediction.predicted_price.toLocaleString()}`;
+                    
+                    resultSection.classList.add('visible');
+                } else {
+                    showError(data.error || 'Prediction failed');
+                }
+            } catch (error) {
+                showError('Request failed: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                loading.classList.remove('visible');
+            }
+        });
+        
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.classList.add('visible');
+        }
+    </script>
+</body>
+</html>

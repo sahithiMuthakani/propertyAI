@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your PropertyAI Dashboard - Make predictions and view history">
+    <title>Dashboard | PropertyAI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #12122a;
+            --bg-card: rgba(30, 30, 60, 0.6);
+            --bg-card-solid: #1e1e3c;
+            --bg-input: rgba(0, 0, 0, 0.3);
+            --bg-nav: rgba(10, 10, 26, 0.95);
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-tertiary: #718096;
+            --border: rgba(255, 255, 255, 0.1);
+            --glow-color: rgba(99, 102, 241, 0.25);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f1f5f9;
+            --bg-secondary: #ffffff;
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-card-solid: #ffffff;
+            --bg-input: rgba(0, 0, 0, 0.05);
+            --bg-nav: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --border: rgba(0, 0, 0, 0.1);
+            --glow-color: rgba(99, 102, 241, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: var(--theme-transition);
+        }
+
+        .bg-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.25;
+        }
+
+        [data-theme="light"] .orb {
+            opacity: 0.1;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #667eea 0%, transparent 70%);
+            top: -15%;
+            left: -10%;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #10b981 0%, transparent 70%);
+            bottom: -10%;
+            right: -5%;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: var(--bg-nav);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--theme-transition);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .user-name strong {
+            color: var(--text-primary);
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+
+        .theme-toggle .sun {
+            display: none;
+        }
+
+        .theme-toggle .moon {
+            display: block;
+        }
+
+        [data-theme="light"] .theme-toggle .sun {
+            display: block;
+        }
+
+        [data-theme="light"] .theme-toggle .moon {
+            display: none;
+        }
+
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            color: var(--danger);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Main */
+        .main {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.purple {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .stat-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .stat-icon.orange {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Grid Layout */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: var(--theme-transition);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.375rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--glow-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-group label {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-predict {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--glow-color);
+        }
+
+        .btn-predict:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Result Card */
+        .result-card {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.1) 100%);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            text-align: center;
+            animation: slideUp 0.4s ease;
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .result-range {
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .table-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--bg-card-solid);
+        }
+
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .table tbody tr:hover {
+            background: var(--glow-color);
+        }
+
+        .table-empty {
+            text-align: center;
+            color: var(--text-tertiary);
+            padding: 3rem !important;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-country {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+        }
+
+        .price-cell {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .error-msg {
+            display: none;
+            padding: 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-predict.loading .loading-spinner {
+            display: block;
+        }
+
+        .btn-predict.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-refresh {
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-refresh:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* News Section */
+        .news-section {
+            margin-bottom: 2rem;
+        }
+
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .news-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .news-title-icon {
+            font-size: 1.5rem;
+        }
+
+        .news-grid {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding-bottom: 0.5rem;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .news-grid::-webkit-scrollbar {
+            display: none;
+            height: 0;
+            width: 0;
+        }
+
+        .news-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 300px;
+            max-width: 320px;
+            flex-shrink: 0;
+        }
+
+        .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            border-color: var(--primary);
+        }
+
+        .news-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .news-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .news-card-meta {
+            flex: 1;
+        }
+
+        .news-category {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .news-date {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-left: 0.5rem;
+        }
+
+        .news-card h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .news-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-clamp: 2;
+            overflow: hidden;
+        }
+
+        .news-source {
+            margin-top: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+        }
+
+        .news-loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <header class="header">
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            PropertyAI
+        </a>
+        <div class="header-right">
+            <span class="user-name">Welcome, <strong id="userName">User</strong></span>
+            <a href="/contact" class="btn-refresh" style="text-decoration: none;">Contact</a>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="12" cy="12" r="5" />
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+                <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+            </button>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Make property predictions and track your history</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon purple">📊</div>
+                <div>
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total Predictions</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">💰</div>
+                <div>
+                    <div class="stat-value" id="statAvg">$0</div>
+                    <div class="stat-label">Average Price</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">📅</div>
+                <div>
+                    <div class="stat-value" id="statLast">-</div>
+                    <div class="stat-label">Last Prediction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real Estate News Section -->
+        <div class="news-section">
+            <div class="news-header">
+                <h2 class="news-title">
+                    <span class="news-title-icon">📰</span>
+                    Real Estate News & Updates
+                </h2>
+                <button class="btn-refresh" id="refreshNews">Refresh</button>
+            </div>
+            <div class="news-grid" id="newsGrid">
+                <div class="news-loading">Loading latest news...</div>
+            </div>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Prediction Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">New Prediction</h2>
+                </div>
+
+                <div class="error-msg" id="predictError"></div>
+
+                <form id="predictForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <select class="form-select" id="country" required>
+                                <option value="">Select Country</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <select class="form-select" id="city" required>
+                                <option value="">Select City</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Rooms / BHK</label>
+                            <input type="number" class="form-input" id="rooms" min="1" max="20" value="2" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Area (sqm)</label>
+                            <input type="number" class="form-input" id="area" min="10" max="2000" value="100" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Building Age (years)</label>
+                            <input type="number" class="form-input" id="buildingAge" min="0" max="150" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Furnishing</label>
+                            <select class="form-select" id="furnishing">
+                                <option value="Unknown">Unknown</option>
+                                <option value="Furnished">Furnished</option>
+                                <option value="Semi-Furnished">Semi-Furnished</option>
+                                <option value="Unfurnished">Unfurnished</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="balcony">
+                            <label for="balcony">Has Balcony</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-predict" id="predictBtn">
+                        <span class="btn-text">Get Price Prediction</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                </form>
+
+                <div class="result-card" id="resultCard">
+                    <div class="result-label">Estimated Property Price</div>
+                    <div class="result-price" id="resultPrice">$0</div>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Prediction History</h2>
+                    <button class="btn-refresh" id="refreshBtn">Refresh</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>Details</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable">
+                            <tr>
+                                <td colspan="4" class="table-empty">Loading predictions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Theme management
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Load user data
+        async function loadUser() {
+            try {
+                const res = await fetch('/api/me');
+                const data = await res.json();
+                if (data.user) {
+                    document.getElementById('userName').textContent = data.user.full_name || data.user.username;
+                    // Update navbar avatar
+                    if (typeof updateNavAvatar === 'function') {
+                        updateNavAvatar(data.user.profile_picture, data.user.full_name || data.user.username);
+                    }
+                }
+            } catch (e) {
+                window.location.href = '/auth';
+            }
+        }
+
+        // Store news data globally for modal access
+        let newsData = [];
+
+        // Load real estate news
+        async function loadNews() {
+            const newsGrid = document.getElementById('newsGrid');
+
+            try {
+                const res = await fetch('/api/news');
+                const data = await res.json();
+
+                if (data.news && data.news.length > 0) {
+                    newsData = data.news; // Store for modal access
+                    newsGrid.innerHTML = data.news.map((item, index) => `
+                        <div class="news-card" onclick="openNewsModal(${index})">
+                            <div class="news-card-header">
+                                <div class="news-icon">${item.icon}</div>
+                                <div class="news-card-meta">
+                                    <span class="news-category">${item.category}</span>
+                                    <span class="news-date">${item.date}</span>
+                                </div>
+                            </div>
+                            <h4>${item.title}</h4>
+                            <p>${item.summary}</p>
+                            <div class="news-source">Source: ${item.source}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    newsGrid.innerHTML = '<div class="news-loading">No news available at the moment.</div>';
+                }
+            } catch (e) {
+                console.error('Failed to load news:', e);
+                newsGrid.innerHTML = '<div class="news-loading">Failed to load news. Please try again.</div>';
+            }
+        }
+
+        // Open news modal with full article
+        function openNewsModal(index) {
+            const news = newsData[index];
+            if (!news) return;
+
+            // Format content with markdown-style bold text converted to HTML
+            let formattedContent = news.content || news.summary;
+            formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedContent = formattedContent.replace(/\n/g, '<br>');
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay show';
+            modal.id = 'newsModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h2 class="modal-title" style="font-size: 1.25rem;">${news.icon} ${news.title}</h2>
+                        <button class="modal-close" onclick="closeNewsModal()">&times;</button>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                            <span class="news-category" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">${news.category}</span>
+                            <span style="color: var(--text-tertiary); font-size: 0.85rem;">${news.date}</span>
+                            <span style="color: var(--text-tertiary); font-size: 0.85rem;">Source: ${news.source}</span>
+                        </div>
+                        <div style="color: var(--text-primary); line-height: 1.8; font-size: 0.95rem;">
+                            ${formattedContent}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Close on overlay click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeNewsModal();
+            });
+        }
+
+        function closeNewsModal() {
+            const modal = document.getElementById('newsModal');
+            if (modal) modal.remove();
+        }
+
+        // Refresh news
+        document.getElementById('refreshNews').addEventListener('click', loadNews);
+
+
+        // Load countries
+        async function loadCountries() {
+            try {
+                const res = await fetch('/api/countries');
+                const data = await res.json();
+                const select = document.getElementById('country');
+                select.innerHTML = '<option value="">Select Country</option>';
+                data.countries?.forEach(c => {
+                    select.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+            } catch (e) {
+                console.error('Failed to load countries:', e);
+            }
+        }
+
+        // Load cities when country changes
+        document.getElementById('country').addEventListener('change', async (e) => {
+            const city = document.getElementById('city');
+            city.innerHTML = '<option value="">Loading...</option>';
+
+            if (!e.target.value) {
+                city.innerHTML = '<option value="">Select City</option>';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/cities/${encodeURIComponent(e.target.value)}`);
+                const data = await res.json();
+                city.innerHTML = '<option value="">Select City</option>';
+                data.cities?.forEach(c => {
+                    city.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+            } catch (e) {
+                city.innerHTML = '<option value="">Error loading cities</option>';
+            }
+        });
+
+        // Load predictions history
+        async function loadHistory() {
+            try {
+                const res = await fetch('/api/predictions');
+                const data = await res.json();
+
+                // Update stats
+                const stats = data.stats || {};
+                document.getElementById('statTotal').textContent = stats.total_predictions || 0;
+                document.getElementById('statAvg').textContent = stats.avg_price ? `$${Math.round(stats.avg_price).toLocaleString()}` : '$0';
+                document.getElementById('statLast').textContent = stats.last_prediction ? new Date(stats.last_prediction).toLocaleDateString() : '-';
+
+                // Update table
+                const tbody = document.getElementById('historyTable');
+                if (!data.predictions || data.predictions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="table-empty">No predictions yet. Make your first prediction!</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.predictions.map(p => `
+                    <tr>
+                        <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                        <td>
+                            <span class="badge badge-country">${p.country}</span><br>
+                            <small style="color: var(--text-secondary)">${p.city}</small>
+                        </td>
+                        <td>${p.rooms} rooms, ${p.area_sqm}sqm</td>
+                        <td class="price-cell">$${Math.round(p.predicted_price).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load history:', e);
+            }
+        }
+
+        // Handle prediction
+        document.getElementById('predictForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('predictBtn');
+            const errorEl = document.getElementById('predictError');
+            const resultCard = document.getElementById('resultCard');
+
+            errorEl.classList.remove('show');
+            resultCard.classList.remove('show');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        country: document.getElementById('country').value,
+                        city: document.getElementById('city').value,
+                        rooms: parseInt(document.getElementById('rooms').value),
+                        area_sqm: parseFloat(document.getElementById('area').value),
+                        building_age: parseInt(document.getElementById('buildingAge').value),
+                        furnishing_status: document.getElementById('furnishing').value,
+                        balcony: document.getElementById('balcony').checked
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || 'Prediction failed');
+
+                // Show result
+                document.getElementById('resultPrice').textContent = `$${data.prediction.predicted_price.toLocaleString()}`;
+                resultCard.classList.add('show');
+
+                // Reload history
+                loadHistory();
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.add('show');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+            } catch (e) { }
+            window.location.href = '/';
+        });
+
+        // Refresh
+        document.getElementById('refreshBtn').addEventListener('click', loadHistory);
+
+        // Init
+        loadUser();
+        loadCountries();
+        loadHistory();
+        loadNews();
+    </script>
+
+    <!-- Profile Settings Modal -->
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+
+        .profile-picture-section {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-upload {
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .btn-upload:hover {
+            border-color: var(--primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--gradient-1);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .success-msg {
+            padding: 0.75rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-msg.show {
+            display: block;
+        }
+
+        /* Settings button */
+        .btn-settings {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-settings:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        /* Calculator Styles */
+        .calculator-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .calc-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .calc-tab {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .calc-tab:hover:not(.active) {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .calc-tab.active {
+            background: var(--gradient-1);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .calc-result {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .calc-result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .calc-result-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .chart-wrapper {
+            height: 250px;
+            margin-top: 1rem;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+
+        .chatbot-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-panel {
+            position: fixed;
+            bottom: 6rem;
+            right: 2rem;
+            width: 380px;
+            height: 500px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .chatbot-panel.show {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            background: var(--gradient-1);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-title {
+            font-weight: 700;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .chat-message.user {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.bot {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .chat-send {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 0.75rem 1rem;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-tertiary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-6px);
+            }
+        }
+    </style>
+
+    <!-- Profile Modal HTML -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Profile Settings</h2>
+                <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+            </div>
+
+            <div class="success-msg" id="profileSuccess">Profile updated successfully!</div>
+
+            <div class="profile-picture-section">
+                <div class="profile-avatar" id="profileAvatar">👤</div>
+                <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+                <button class="btn-upload" onclick="document.getElementById('profilePicInput').click()">Upload
+                    Photo</button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchProfileTab('info')">Profile Info</button>
+                <button class="tab-btn" onclick="switchProfileTab('password')">Change Password</button>
+            </div>
+
+            <div id="profileInfoTab" class="tab-content active">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="profileFullName" placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-input" id="profilePhone" placeholder="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" id="profileLocation" placeholder="Your address">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-input" id="profileCity" placeholder="City">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-input" id="profileCountry" placeholder="Country">
+                    </div>
+                </div>
+                <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+            </div>
+
+            <div id="passwordTab" class="tab-content">
+                <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" class="form-input" id="currentPassword">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-input" id="newPassword">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-input" id="confirmPassword">
+                </div>
+                <button class="btn-save" onclick="changePassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROI/EMI Calculator Section -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div id="calculatorSection" style="display: none; max-width: 1000px; margin: 2rem auto; padding: 0 1rem;">
+        <div
+            style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; overflow: hidden;">
+            <!-- Calculator Header -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2
+                    style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    💰 Investment Calculator
+                </h2>
+                <p style="color: var(--text-secondary);">Plan your property investment with EMI and ROI projections</p>
+            </div>
+
+            <!-- Tab Buttons -->
+            <div
+                style="display: flex; gap: 0.5rem; margin-bottom: 2rem; background: var(--bg-primary); padding: 0.5rem; border-radius: 16px;">
+                <button class="calc-tab active" onclick="switchCalcTab('emi')"
+                    style="flex: 1; padding: 1rem; background: transparent; border: none; border-radius: 12px; color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
+                    🏦 EMI Calculator
+                </button>
+                <button class="calc-tab" onclick="switchCalcTab('roi')"
+                    style="flex: 1; padding: 1rem; background: transparent; border: none; border-radius: 12px; color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
+                    📈 ROI Calculator
+                </button>
+            </div>
+
+            <!-- EMI Calculator -->
+            <div id="emiCalc" class="tab-content active">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Left: Inputs -->
+                    <div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600;">
+                                <span>🏠</span> Property Price
+                            </label>
+                            <div style="position: relative;">
+                                <span
+                                    style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);">₹</span>
+                                <input type="number" class="form-input" id="loanAmount" value="5000000"
+                                    oninput="calculateEMI()" style="padding-left: 2.5rem;">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600;">
+                                <span>💵</span> Down Payment
+                            </label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="range" id="downPaymentSlider" min="10" max="50" value="20"
+                                    oninput="document.getElementById('downPayment').value = this.value; calculateEMI();"
+                                    style="flex: 1; accent-color: var(--primary);">
+                                <input type="number" class="form-input" id="downPayment" value="20"
+                                    oninput="document.getElementById('downPaymentSlider').value = this.value; calculateEMI();"
+                                    style="width: 80px; text-align: center;">
+                                <span style="color: var(--text-tertiary);">%</span>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600;">
+                                <span>📊</span> Interest Rate (per annum)
+                            </label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="range" id="interestSlider" min="6" max="15" step="0.1" value="8.5"
+                                    oninput="document.getElementById('interestRate').value = this.value; calculateEMI();"
+                                    style="flex: 1; accent-color: var(--primary);">
+                                <input type="number" class="form-input" id="interestRate" value="8.5" step="0.1"
+                                    oninput="document.getElementById('interestSlider').value = this.value; calculateEMI();"
+                                    style="width: 80px; text-align: center;">
+                                <span style="color: var(--text-tertiary);">%</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600;">
+                                <span>📅</span> Loan Tenure
+                            </label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="range" id="tenureSlider" min="5" max="30" value="20"
+                                    oninput="document.getElementById('loanTenure').value = this.value; calculateEMI();"
+                                    style="flex: 1; accent-color: var(--primary);">
+                                <input type="number" class="form-input" id="loanTenure" value="20"
+                                    oninput="document.getElementById('tenureSlider').value = this.value; calculateEMI();"
+                                    style="width: 80px; text-align: center;">
+                                <span style="color: var(--text-tertiary);">Years</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Results -->
+                    <div>
+                        <div
+                            style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%); border: 2px solid var(--primary); border-radius: 20px; padding: 2rem; text-align: center; margin-bottom: 1.5rem;">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                Monthly EMI</div>
+                            <div id="emiResult" style="font-size: 2.5rem; font-weight: 800; color: var(--primary);">
+                                ₹43,391</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div
+                                style="background: var(--bg-primary); border-radius: 12px; padding: 1rem; text-align: center;">
+                                <div
+                                    style="color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase;">
+                                    Principal</div>
+                                <div id="principalAmount"
+                                    style="font-size: 1.25rem; font-weight: 700; color: var(--accent);">₹40,00,000</div>
+                            </div>
+                            <div
+                                style="background: var(--bg-primary); border-radius: 12px; padding: 1rem; text-align: center;">
+                                <div
+                                    style="color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase;">
+                                    Total Interest</div>
+                                <div id="totalInterest" style="font-size: 1.25rem; font-weight: 700; color: #f59e0b;">
+                                    ₹64,13,940</div>
+                            </div>
+                        </div>
+
+                        <div
+                            style="background: var(--bg-primary); border-radius: 12px; padding: 1rem; text-align: center; margin-bottom: 1rem;">
+                            <div style="color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase;">
+                                Total Amount Payable</div>
+                            <div id="totalPayable"
+                                style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">₹1,04,13,940
+                            </div>
+                        </div>
+
+                        <div style="height: 180px;">
+                            <canvas id="emiChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROI Calculator -->
+            <div id="roiCalc" class="tab-content">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Left: Inputs -->
+                    <div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600;">
+                                <span>🏠</span> Purchase Price
+                            </label>
+                            <div style="position: relative;">
+                                <span
+                                    style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);">₹</span>
+                                <input type="number" class="form-input" id="purchasePrice" value="5000000"
+                                    oninput="calculateROI()" style="padding-left: 2.5rem;">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600;">
+                                <span>🏷️</span> Expected Monthly Rent
+                            </label>
+                            <div style="position: relative;">
+                                <span
+                                    style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);">₹</span>
+                                <input type="number" class="form-input" id="monthlyRent" value="25000"
+                                    oninput="calculateROI()" style="padding-left: 2.5rem;">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600;">
+                                <span>📈</span> Annual Appreciation
+                            </label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="range" id="appreciationSlider" min="2" max="15" step="0.5" value="5"
+                                    oninput="document.getElementById('appreciation').value = this.value; calculateROI();"
+                                    style="flex: 1; accent-color: var(--primary);">
+                                <input type="number" class="form-input" id="appreciation" value="5" step="0.5"
+                                    oninput="document.getElementById('appreciationSlider').value = this.value; calculateROI();"
+                                    style="width: 80px; text-align: center;">
+                                <span style="color: var(--text-tertiary);">%</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600;">
+                                <span>📅</span> Holding Period
+                            </label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="range" id="holdingSlider" min="1" max="20" value="10"
+                                    oninput="document.getElementById('holdingPeriod').value = this.value; calculateROI();"
+                                    style="flex: 1; accent-color: var(--primary);">
+                                <input type="number" class="form-input" id="holdingPeriod" value="10"
+                                    oninput="document.getElementById('holdingSlider').value = this.value; calculateROI();"
+                                    style="width: 80px; text-align: center;">
+                                <span style="color: var(--text-tertiary);">Years</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Results -->
+                    <div>
+                        <div
+                            style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.15) 100%); border: 2px solid var(--accent); border-radius: 20px; padding: 2rem; text-align: center; margin-bottom: 1.5rem;">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Total
+                                ROI</div>
+                            <div id="roiResult" style="font-size: 2.5rem; font-weight: 800; color: var(--accent);">
+                                122.5%</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div
+                                style="background: var(--bg-primary); border-radius: 12px; padding: 1rem; text-align: center;">
+                                <div
+                                    style="color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase;">
+                                    Future Value</div>
+                                <div id="futureValue"
+                                    style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">₹81,44,473
+                                </div>
+                            </div>
+                            <div
+                                style="background: var(--bg-primary); border-radius: 12px; padding: 1rem; text-align: center;">
+                                <div
+                                    style="color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase;">
+                                    Total Rental Income</div>
+                                <div id="totalRental" style="font-size: 1.25rem; font-weight: 700; color: #f59e0b;">
+                                    ₹30,00,000</div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div
+                                style="background: var(--bg-primary); border-radius: 12px; padding: 1rem; text-align: center;">
+                                <div
+                                    style="color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase;">
+                                    Capital Gain</div>
+                                <div id="capitalGain"
+                                    style="font-size: 1.25rem; font-weight: 700; color: var(--accent);">₹31,44,473</div>
+                            </div>
+                            <div
+                                style="background: var(--bg-primary); border-radius: 12px; padding: 1rem; text-align: center;">
+                                <div
+                                    style="color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase;">
+                                    Annual Yield</div>
+                                <div id="annualYield"
+                                    style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">6.0%</div>
+                            </div>
+                        </div>
+
+                        <div style="height: 180px;">
+                            <canvas id="roiChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back button -->
+            <div
+                style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                <button onclick="showCalculator()"
+                    style="padding: 0.75rem 2rem; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--text-secondary); cursor: pointer; font-weight: 500;">
+                    ← Back to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot HTML -->
+    <button class="chatbot-btn" id="chatbotBtn" onclick="toggleChatbot()">💬</button>
+    <div class="chatbot-panel" id="chatbotPanel">
+        <div class="chat-header">
+            <span class="chat-header-title">🏠 PropertyAI Assistant</span>
+            <button class="chat-close" onclick="toggleChatbot()">&times;</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message bot">
+                Hi! I'm your PropertyAI Assistant. Ask me anything about real estate, property valuation, or investment
+                tips!
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask me anything..."
+                onkeypress="if(event.key==='Enter')sendMessage()">
+            <button class="chat-send" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+        // Add profile avatar to header
+        const headerRight = document.querySelector('.header-right');
+
+        // Profile avatar
+        const navAvatar = document.createElement('div');
+        navAvatar.id = 'navProfileAvatar';
+        navAvatar.className = 'nav-avatar';
+        navAvatar.innerHTML = `<img src="/static/uploads/default-avatar.svg" alt="Profile" onerror="this.onerror=null; this.parentElement.innerHTML='👤';">`;
+        navAvatar.onclick = openProfileModal;
+        navAvatar.title = 'Profile Settings';
+        navAvatar.style.cssText = `
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            font-size: 1.25rem;
+            transition: all 0.3s;
+        `;
+
+        headerRight.insertBefore(navAvatar, headerRight.firstChild);
+
+        // Add nav links
+        const nav = document.createElement('div');
+        nav.style.cssText = 'display: flex; gap: 1rem; margin-right: 1rem;';
+        nav.innerHTML = `
+            <a href="/home" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dashboard</a>
+            <a href="#" onclick="showCalculator()" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Calculator</a>
+            <a href="/analytics" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Analytics</a>
+            <a href="/blog" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Blog</a>
+        `;
+        headerRight.insertBefore(nav, headerRight.firstChild);
+
+        // Function to update nav avatar
+        function updateNavAvatar(profilePicture, fullName) {
+            const navAvatar = document.getElementById('navProfileAvatar');
+            if (navAvatar) {
+                if (profilePicture) {
+                    navAvatar.innerHTML = `<img src="${profilePicture}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">`;
+                } else if (fullName) {
+                    navAvatar.innerHTML = `<span style="color: var(--text-primary); font-weight: 600;">${fullName.charAt(0).toUpperCase()}</span>`;
+                } else {
+                    navAvatar.innerHTML = '👤';
+                }
+            }
+        }
+
+
+        // Profile Modal Functions
+        let currentUser = null;
+
+        function openProfileModal() {
+            document.getElementById('profileModal').classList.add('show');
+            loadProfileData();
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        function switchProfileTab(tab) {
+            document.querySelectorAll('.tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab === 'info' ? 'profileInfoTab' : 'passwordTab').classList.add('active');
+        }
+
+        async function loadProfileData() {
+            try {
+                const res = await fetch('/api/me');
+                const data = await res.json();
+                currentUser = data.user;
+
+                document.getElementById('profileFullName').value = currentUser.full_name || '';
+                document.getElementById('profilePhone').value = currentUser.phone || '';
+                document.getElementById('profileLocation').value = currentUser.location || '';
+                document.getElementById('profileCity').value = currentUser.user_city || '';
+                document.getElementById('profileCountry').value = currentUser.user_country || '';
+
+                const avatar = document.getElementById('profileAvatar');
+                if (currentUser.profile_picture) {
+                    avatar.innerHTML = `<img src="${currentUser.profile_picture}" alt="Profile">`;
+                } else {
+                    avatar.innerHTML = currentUser.full_name ? currentUser.full_name.charAt(0).toUpperCase() : '👤';
+                }
+            } catch (e) {
+                console.error('Failed to load profile:', e);
+            }
+        }
+
+        async function saveProfile() {
+            try {
+                const profileData = {
+                    full_name: document.getElementById('profileFullName').value,
+                    phone: document.getElementById('profilePhone').value,
+                    location: document.getElementById('profileLocation').value,
+                    user_city: document.getElementById('profileCity').value,
+                    user_country: document.getElementById('profileCountry').value
+                };
+
+                console.log('Saving profile:', profileData);
+
+                const res = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(profileData)
+                });
+
+                const data = await res.json();
+                console.log('Profile save response:', data);
+
+                if (res.ok) {
+                    document.getElementById('profileSuccess').classList.add('show');
+                    setTimeout(() => document.getElementById('profileSuccess').classList.remove('show'), 3000);
+                    loadUser();
+                    // Also update the currentUser data
+                    currentUser = { ...currentUser, ...profileData };
+                } else {
+                    alert(data.error || 'Failed to save profile. Please try again.');
+                }
+            } catch (e) {
+                console.error('Error saving profile:', e);
+                alert('Failed to save profile. Please check your connection and try again.');
+            }
+        }
+
+        async function changePassword() {
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (newPass !== confirmPass) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/profile/password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        current_password: document.getElementById('currentPassword').value,
+                        new_password: newPass
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Password changed successfully');
+                    closeProfileModal();
+                } else {
+                    alert(data.error || 'Failed to change password');
+                }
+            } catch (e) {
+                alert('Failed to change password');
+            }
+        }
+
+        // Profile Picture Upload
+        document.getElementById('profilePicInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                console.log('Uploading profile picture:', file.name, file.type, file.size);
+
+                const res = await fetch('/api/profile/picture', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                const data = await res.json();
+                console.log('Upload response:', data);
+
+                if (res.ok) {
+                    document.getElementById('profileAvatar').innerHTML = `<img src="${data.profile_picture}" alt="Profile">`;
+                    document.getElementById('profileSuccess').classList.add('show');
+                    setTimeout(() => document.getElementById('profileSuccess').classList.remove('show'), 3000);
+                    // Also update the header avatar if exists
+                    const headerAvatar = document.querySelector('.user-avatar img');
+                    if (headerAvatar) {
+                        headerAvatar.src = data.profile_picture;
+                    }
+                } else {
+                    alert(data.error || 'Failed to upload picture. Please try again.');
+                }
+            } catch (e) {
+                console.error('Error uploading picture:', e);
+                alert('Failed to upload picture. Please check your connection and try again.');
+            }
+        });
+
+        // Calculator Functions
+        let emiChart, roiChart;
+
+        function showCalculator() {
+            const calcSection = document.getElementById('calculatorSection');
+            const gridLayout = document.querySelector('.grid-layout');
+
+            if (calcSection.style.display === 'none') {
+                calcSection.style.display = 'block';
+                gridLayout.style.display = 'none';
+                calculateEMI();
+            } else {
+                calcSection.style.display = 'none';
+                gridLayout.style.display = 'grid';
+            }
+        }
+
+        function switchCalcTab(tab) {
+            document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('emiCalc').classList.toggle('active', tab === 'emi');
+            document.getElementById('roiCalc').classList.toggle('active', tab === 'roi');
+            if (tab === 'roi') calculateROI();
+        }
+
+        function calculateEMI() {
+            const totalPrice = parseFloat(document.getElementById('loanAmount').value);
+            const downPaymentPct = parseFloat(document.getElementById('downPayment').value) / 100;
+            const P = totalPrice * (1 - downPaymentPct);
+            const r = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
+            const n = parseFloat(document.getElementById('loanTenure').value) * 12;
+
+            const emi = P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+            const totalPayment = emi * n;
+            const totalInterest = totalPayment - P;
+
+            document.getElementById('emiResult').textContent = '₹' + Math.round(emi).toLocaleString();
+            document.getElementById('totalInterest').textContent = '₹' + Math.round(totalInterest).toLocaleString();
+            document.getElementById('principalAmount').textContent = '₹' + Math.round(P).toLocaleString();
+            document.getElementById('totalPayable').textContent = '₹' + Math.round(totalPayment).toLocaleString();
+
+            // Update chart
+            if (emiChart) emiChart.destroy();
+            emiChart = new Chart(document.getElementById('emiChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        data: [P, totalInterest],
+                        backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: 'rgba(160, 174, 192, 0.8)' } } }
+                }
+            });
+        }
+
+        function calculateROI() {
+            const purchase = parseFloat(document.getElementById('purchasePrice').value);
+            const rent = parseFloat(document.getElementById('monthlyRent').value);
+            const appreciation = parseFloat(document.getElementById('appreciation').value) / 100;
+            const years = parseFloat(document.getElementById('holdingPeriod').value);
+
+            const futureValue = purchase * Math.pow(1 + appreciation, years);
+            const totalRent = rent * 12 * years;
+            const capitalGain = futureValue - purchase;
+            const totalReturn = capitalGain + totalRent;
+            const roi = (totalReturn / purchase) * 100;
+            const annualYield = (rent * 12 / purchase) * 100;
+
+            document.getElementById('roiResult').textContent = roi.toFixed(1) + '%';
+            document.getElementById('futureValue').textContent = '₹' + Math.round(futureValue).toLocaleString();
+            document.getElementById('totalRental').textContent = '₹' + Math.round(totalRent).toLocaleString();
+            document.getElementById('capitalGain').textContent = '₹' + Math.round(capitalGain).toLocaleString();
+            document.getElementById('annualYield').textContent = annualYield.toFixed(1) + '%';
+
+            // Generate year-by-year data
+            const labels = [];
+            const values = [];
+            for (let i = 0; i <= years; i++) {
+                labels.push('Year ' + i);
+                values.push(purchase * Math.pow(1 + appreciation, i));
+            }
+
+            if (roiChart) roiChart.destroy();
+            roiChart = new Chart(document.getElementById('roiChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Property Value',
+                        data: values,
+                        borderColor: 'rgba(16, 185, 129, 0.8)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { ticks: { color: 'rgba(160, 174, 192, 0.8)' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        x: { ticks: { color: 'rgba(160, 174, 192, 0.8)' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Chatbot Functions
+        function toggleChatbot() {
+            document.getElementById('chatbotPanel').classList.toggle('show');
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messages = document.getElementById('chatMessages');
+
+            // Add user message
+            messages.innerHTML += `<div class="chat-message user">${message}</div>`;
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            // Show typing indicator
+            messages.innerHTML += `<div class="chat-message bot typing-indicator" id="typing"><span></span><span></span><span></span></div>`;
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await res.json();
+
+                // Remove typing indicator
+                document.getElementById('typing')?.remove();
+
+                if (data.response) {
+                    messages.innerHTML += `<div class="chat-message bot">${data.response}</div>`;
+                } else {
+                    messages.innerHTML += `<div class="chat-message bot">Sorry, I couldn't process that. Please try again.</div>`;
+                }
+            } catch (e) {
+                document.getElementById('typing')?.remove();
+                messages.innerHTML += `<div class="chat-message bot">Sorry, I'm having trouble connecting. Please try again later.</div>`;
+            }
+
+            messages.scrollTop = messages.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>
